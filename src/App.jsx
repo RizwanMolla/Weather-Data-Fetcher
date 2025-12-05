@@ -11,6 +11,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [recentSearches, setRecentSearches] = useState([]);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     // Load recent searches from memory
@@ -18,6 +19,14 @@ function App() {
     if (stored) try {
       setRecentSearches(JSON.parse(stored));
     } catch (e) { }
+    
+    // Simulate initial loading with API connection check
+    const initializeApp = async () => {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second loading
+      setInitialLoading(false);
+    };
+    
+    initializeApp();
   }, []);
 
   const saveSearch = (searchCity) => {
@@ -135,6 +144,76 @@ function App() {
     setError('');
     setLoading(false);
   };
+
+  // Initial loading screen
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="fixed inset-0 z-0">
+          <div className="absolute top-0 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-yellow-600 opacity-5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-yellow-700 opacity-5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute inset-0 bg-linear-to-b from-gray-950 via-black to-gray-950 opacity-80"></div>
+        </div>
+
+        {/* Grid Pattern */}
+        <div className="fixed inset-0 z-0 opacity-5" style={{
+          backgroundImage: 'linear-gradient(90deg, #fbbf24 1px transparent 1px), linear-gradient(0deg, #fbbf24 1px transparent 1px)',
+          backgroundSize: '80px 80px'
+        }}></div>
+
+        <div className="relative z-10 text-center">
+          {/* Logo */}
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6">
+            <div className="h-px w-8 sm:w-12 bg-linear-to-r from-transparent to-yellow-500/60"></div>
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-linear-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-2xl shadow-yellow-500/40 border border-yellow-300/30 animate-pulse">
+              <Sun className="w-8 h-8 sm:w-10 sm:h-10 text-black animate-spin" strokeWidth={1} style={{ animationDuration: '4s' }} />
+            </div>
+            <div className="h-px w-8 sm:w-12 bg-linear-to-l from-transparent to-yellow-500/60"></div>
+          </div>
+
+          {/* Title */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-yellow-200 via-yellow-300 to-yellow-400 tracking-tight mb-4 animate-pulse">
+            WEATHER DATA
+          </h1>
+          
+          <div className="flex items-center gap-2 mb-8 flex-wrap justify-center">
+            <div className="h-px w-10 sm:w-16 bg-linear-to-r from-yellow-500/40 to-yellow-500/20"></div>
+            <p className="text-xs sm:text-sm text-gray-400 font-light tracking-widest uppercase">FETCHER</p>
+            <div className="h-px w-10 sm:w-16 bg-linear-to-l from-yellow-500/40 to-yellow-500/20"></div>
+          </div>
+
+          {/* Loading Animation */}
+          <div className="relative mb-6">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="w-3 h-3 rounded-full bg-yellow-400 animate-bounce"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500 animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-600 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
+            <p className="text-gray-400 font-light text-sm sm:text-base">Connecting to Weather API...</p>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="w-64 sm:w-80 mx-auto bg-gray-800 rounded-full h-2 mb-4">
+            <div className="bg-linear-to-r from-yellow-400 to-yellow-600 h-2 rounded-full animate-pulse" style={{ 
+              width: '100%', 
+              animation: 'loading-progress 2s ease-out forwards'
+            }}></div>
+          </div>
+
+          <p className="text-gray-500 text-xs font-light">Powered by AWS Lambda & API Gateway</p>
+        </div>
+
+        <style jsx>{`
+          @keyframes loading-progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black flex flex-col p-3 sm:p-4 md:p-6 relative overflow-hidden">
