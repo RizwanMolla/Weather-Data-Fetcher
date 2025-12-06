@@ -25,3 +25,4 @@ dist-ssr
 
 # Local env (do not commit secrets)
 .env
+.env.production
